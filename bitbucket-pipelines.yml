@@ -1,0 +1,31 @@
+# This is a sample build configuration for Ruby.
+# Check our guides at https://confluence.atlassian.com/x/VYk8Lw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: spittet/ruby-postgresql
+
+pipelines:
+    default:
+        - step:
+            script: # Modify the commands below to build your repository.
+                - echo "this is default config. does nothing"
+                - ruby --version
+    branches:
+        master:
+        - step:
+            script:
+                - echo "This script runs only on commit to the master branch."
+        fb-*:
+        - step:
+            script:
+                - echo "this is feature branch"
+                - ruby --version
+                - bundler --version
+                - bundle install
+                - /etc/init.d/postgresql start
+                - sudo -u postgres sh -c 'createuser $DB_USER & createdb $TEST_DB'
+                - sudo -u postgres psql -c "ALTER USER $DB_USER WITH PASSWORD $DB_PASSWORD"
+                - mv ./config/database.yml.example ./config/database.yml
+                - rake db:migrate
+                - echo "finished"
