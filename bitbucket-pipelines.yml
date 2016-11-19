@@ -23,8 +23,3 @@ pipelines:
           - ruby --version
           - bundler --version
           - bundle install
-
-          
-          
-    
-    
