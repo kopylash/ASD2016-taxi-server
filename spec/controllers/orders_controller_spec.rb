@@ -25,4 +25,18 @@ RSpec.describe OrdersController, type: :controller do
       expect(response.content_type).to eq 'application/json'
     end
   end
+
+  describe 'GET show' do
+    before :all do
+      @order = Order.create!(:client_name => 'Client 1')
+    end
+    it 'assigns correct order' do
+      get :show, :id => @order.id
+      expect(assigns(:order)).to eq @order
+    end
+    it 'returns json' do
+      get :show, :id => @order.id
+      expect(response.content_type).to eq 'application/json'
+    end
+  end
 end
