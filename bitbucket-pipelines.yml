@@ -30,4 +30,4 @@ pipelines:
                 - sudo -u postgres psql -c "ALTER USER $DB_USER WITH PASSWORD $DB_PASSWORD"
                 - mv ./config/database.yml.example ./config/database.yml
                 - rake db:migrate
-                - echo "finished"
+                - rspec
