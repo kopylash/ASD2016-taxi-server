@@ -3,7 +3,7 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: spittet/ruby-postgresql
+image: instructure/ruby-node-pg
 
 pipelines:
     default:
@@ -23,6 +23,7 @@ pipelines:
                 - ruby --version
                 - bundler --version
                 - bundle install
+                - apt-get install nodejs
                 - /etc/init.d/postgresql start
                 - sudo -u postgres sh -c "createuser $DB_USER & createdb $TEST_DB"
                 - sudo -u postgres psql -c "ALTER USER $DB_USER WITH PASSWORD $DB_PASSWORD"
