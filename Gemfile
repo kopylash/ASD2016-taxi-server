@@ -51,6 +51,7 @@ group :test do
   gem 'launchy'
   gem 'selenium-webdriver'
   gem 'poltergeist'
+  gem 'simplecov'
 end
 
 group :development do
