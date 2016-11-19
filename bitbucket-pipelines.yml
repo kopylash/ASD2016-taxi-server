@@ -23,12 +23,7 @@ pipelines:
           - ruby --version
           - bundler --version
           - bundle install
-          - /etc/init.d/postgresql start
-          - sudo -u postgres sh -c 'createuser $DB_USER & createdb $TEST_DB'
-          - sudo -u postgres psql -c "ALTER USER $DB_USER WITH PASSWORD $DB_PASSWORD"
-          - mv ./config/database.yml.example ./config/database.yml
-          - rake db:migrate
-          - echo "finished"
+
           
           
     
