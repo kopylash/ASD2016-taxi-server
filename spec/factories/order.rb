@@ -5,4 +5,8 @@ FactoryGirl.define do
     pickup_address  "Raekoja Plats 1, Tartu"
     dropoff_address "Liivi 2, Tartu"
   end
+
+  factory :invalid_order, :class => Order do
+    client_name "John"
+  end
 end
