@@ -14,7 +14,6 @@ drivers = [
     {:name => 'Fellix Ferdiges', :phone => '+37253915324', :car_model => 'Toyota Camry', :car_number => 'EST600', :status => 0}
 ]
 
-#todo uncomment after models are done
-# drivers.each do |d|
-#   Driver.create!(d)
-# end
+drivers.each do |d|
+  Driver.create!(d)
+end
