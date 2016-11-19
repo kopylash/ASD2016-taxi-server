@@ -24,6 +24,10 @@ RSpec.describe OrdersController, type: :controller do
       get :index, :driver_id => @driver1.id
       expect(response.content_type).to eq 'application/json'
     end
+    it 'returns 404 if invalid driver id given' do
+      get :index, :driver_id => @driver2.id + 1
+      expect(response.status).to eq 404
+    end
   end
 
   describe 'GET show' do
@@ -37,6 +41,10 @@ RSpec.describe OrdersController, type: :controller do
     it 'returns json' do
       get :show, :id => @order.id
       expect(response.content_type).to eq 'application/json'
+    end
+    it 'returns 404 if invalid order id given' do
+      get :show, :id => @order.id + 1
+      expect(response.status).to eq 404
     end
   end
 

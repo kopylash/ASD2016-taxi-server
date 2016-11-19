@@ -1,13 +1,22 @@
 class OrdersController < ApplicationController
   def index
-    @driver = Driver.find params[:driver_id]
-    @orders = @driver.orders
-    render :json => {:orders => @orders}
+    begin
+      @driver = Driver.find params[:driver_id]
+    rescue ActiveRecord::RecordNotFound
+      render :json => {}, :status => :not_found
+    else
+      @orders = @driver.orders
+      render :json => {:orders => @orders}
+    end
   end
 
   def show
-    @order = Order.find params[:id]
-    render :json => {:order => @order}
+    begin
+      @order = Order.find params[:id]
+      render :json => {:order => @order}
+    rescue ActiveRecord::RecordNotFound
+      render :json => {}, :status => :not_found
+    end
   end
 
   def create
