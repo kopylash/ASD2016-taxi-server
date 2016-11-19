@@ -39,4 +39,15 @@ RSpec.describe OrdersController, type: :controller do
       expect(response.content_type).to eq 'application/json'
     end
   end
+
+  describe 'POST create' do
+    it 'creates new order' do
+      post :create, :order => FactoryGirl.build(:order).to_json
+      expect(assigns(:order).class).to eq Order
+    end
+    it 'returns error code when invalid data provided' do
+      post :create, :order => FactoryGirl.build(:invalid_order).to_json
+      expect(response.status).to eq 400
+    end
+  end
 end
