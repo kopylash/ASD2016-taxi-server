@@ -64,5 +64,14 @@ RSpec.describe OrdersController, type: :controller do
       post :create, :order => FactoryGirl.build(:invalid_order).to_json
       expect(response.status).to eq 400
     end
+    it 'assigns available driver' do
+      @driver = FactoryGirl.create(:driver)
+      post :create, :order => FactoryGirl.build(:order).to_json
+      expect(assigns(:order).driver).to eq @driver
+    end
+    it 'throws error when no available drivers found' do
+      post :create, :order => FactoryGirl.build(:order).to_json
+      expect(response.status).to eq 503
+    end
   end
 end

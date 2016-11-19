@@ -24,8 +24,18 @@ class OrdersController < ApplicationController
 
     @order = Order.new order_params
 
-    if @order.save
-      render :json => {:order => @order}
+    if @order.valid?
+      available_driver = Driver.find_available_driver @order
+
+      if available_driver.present?
+        @order.driver = available_driver
+
+        @order.save
+
+        render :json => {:order => @order}
+      else
+        render :json => {}, :status => :service_unavailable
+      end
     else
       render :json => {:errors => @order.errors}, :status => :bad_request
     end
