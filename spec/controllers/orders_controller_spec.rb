@@ -73,5 +73,11 @@ RSpec.describe OrdersController, type: :controller do
       post :create, :order => FactoryGirl.build(:order).to_json
       expect(response.status).to eq 503
     end
+    it 'sets the status of the assigned driver to busy' do
+      @driver = FactoryGirl.create(:driver)
+      @order = FactoryGirl.build(:order)
+      post :create, :order => @order.to_json
+      expect(assigns(:order).driver.status).to eq "busy"
+    end
   end
 end

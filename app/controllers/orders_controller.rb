@@ -30,6 +30,9 @@ class OrdersController < ApplicationController
       if available_driver.present?
         @order.driver = available_driver
 
+        available_driver.status = :busy
+        available_driver.save
+
         @order.save
 
         render :json => {:order => @order}
