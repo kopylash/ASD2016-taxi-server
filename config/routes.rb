@@ -1,3 +1,6 @@
 Rails.application.routes.draw do
-  post "/bookings", :to => "bookings#create"
+  resources :orders, only: [:create, :show]
+  resources :drivers, only: [:show] do
+    resources :orders, only: [:index, :show]
+  end
 end

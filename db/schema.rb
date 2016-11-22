@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161119104657) do
+ActiveRecord::Schema.define(version: 20161119162147) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20161119104657) do
     t.string   "car_number"
     t.float    "latitude"
     t.float    "longitude"
-    t.integer  "status"
+    t.integer  "status",     default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 20161119104657) do
     t.string   "phone"
     t.float    "distance"
     t.decimal  "price",           precision: 5, scale: 2
-    t.boolean  "completed"
+    t.boolean  "completed",                               default: false
     t.integer  "rating"
     t.datetime "created_at"
     t.datetime "updated_at"
