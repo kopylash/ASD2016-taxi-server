@@ -56,7 +56,7 @@ RSpec.describe OrdersController, type: :controller do
   end
 
   describe 'POST create' , :pending => true do
-    it 'creates new order'   do
+    it 'creates new order' do
       post :create, :order => FactoryGirl.build(:order).to_json
       expect(assigns(:order).class).to eq Order
     end
