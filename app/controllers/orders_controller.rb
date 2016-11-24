@@ -1,4 +1,10 @@
 class OrdersController < ApplicationController
+
+   def valid_params
+     json_params = ActionController::Parameters.new( JSON.parse(request.body.read) )
+     return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone)
+   end
+
   def index
     begin
       @driver = Driver.find params[:driver_id]
@@ -20,9 +26,7 @@ class OrdersController < ApplicationController
   end
 
   def create
-    order_params = JSON.parse params[:order]
-
-    @order = Order.new order_params
+    @order = Order.new valid_params
 
     if @order.valid?
       available_driver = Driver.find_available_driver @order
