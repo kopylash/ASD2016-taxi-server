@@ -33,7 +33,7 @@ class OrdersController < ApplicationController
       # TODO notify drivers
 
       unless @order.price.present?
-        matrix_data = get_trip_data @order.pickup_lat, @order.pickup_lon, @order.dropoff_lat, @order.dropoff_lon
+        matrix_data = get_trip_data @order.pickup_address, @order.dropoff_address
 
         price = calculate_price matrix_data.distance_in_meters
 
@@ -49,7 +49,7 @@ class OrdersController < ApplicationController
   end
 
   def price
-    matrix_data = get_trip_data params[:pickup_lat], params[:pickup_lon], params[:dropoff_lat], params[:dropoff_lon]
+    matrix_data = get_trip_data params[:pickup], params[:dropoff]
 
     distance = matrix_data.distance_in_meters
 
@@ -67,15 +67,13 @@ class OrdersController < ApplicationController
     distance_m / 1000 * km_price
   end
 
-  def get_trip_data pickup_lat, pickup_lon, dropoff_lat, dropoff_lon
+  def get_trip_data pickup, dropoff
     origin = {
-      lat: pickup_lat,
-      lng: pickup_lon
+      address: pickup
     }
 
     destination = {
-      lat: dropoff_lat,
-      lng: dropoff_lon
+      address: dropoff
     }
 
     matrix = GoogleDistanceMatrix::Matrix.new
