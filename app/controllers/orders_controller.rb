@@ -2,7 +2,7 @@ class OrdersController < ApplicationController
 
    def valid_params
      json_params = ActionController::Parameters.new( JSON.parse(request.body.read) )
-     return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone)
+     json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone)
    end
 
   def index
@@ -29,6 +29,10 @@ class OrdersController < ApplicationController
     @order = Order.new valid_params
 
     if @order.valid?
+      # hardcoded order pickup lattitude and longtitude
+      @order.pickup_lat= 58.377389
+      @order.pickup_lon= 26.727057
+
       available_driver = Driver.find_available_driver @order
 
       if available_driver.present?
