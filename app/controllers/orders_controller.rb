@@ -34,7 +34,6 @@ class OrdersController < ApplicationController
       NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
 
       @order.save
-
       render :json => {:order => @order}
       # todo maybe just send "order being processeed"
       else
@@ -43,7 +42,16 @@ class OrdersController < ApplicationController
   end
 
 
-  def accept_order
+  def accept
+
+    # order_id, driver_id, find order, and set driver to it.
+
+
+    #todo set notification to client channel -> phone number
+
+
+
+    puts('you you you accept')
     # if available_drivers.present?
     #   @order.driver = available_drivers
     #
@@ -57,5 +65,6 @@ class OrdersController < ApplicationController
     #   render :json => {}, :status => :service_unavailable
     # end
     # #todo send info to client (order + driver info)
+    render :json => {:message => "hello"}
   end
 end
