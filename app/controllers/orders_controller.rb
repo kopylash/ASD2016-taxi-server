@@ -29,20 +29,15 @@ class OrdersController < ApplicationController
     @order = Order.new valid_params
 
     if @order.valid?
-      available_driver = Driver.find_available_driver @order
 
-      available_driver = Driver.find_available_drivers @order
-      # TODO notify drivers
-
-        @order.save
-
-        render :json => {:order => @order}
-   else
-      #sending push request to available driver
+      available_drivers = Driver.find_available_drivers @order
       NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
 
-      render :json => {:message => "Your order is being processed. You will be notified as soon as driver accepts it."}
-    else
+      @order.save
+
+      render :json => {:order => @order}
+      # todo maybe just send "order being processeed"
+      else
       render :json => {:errors => @order.errors}, :status => :bad_request
     end
   end
