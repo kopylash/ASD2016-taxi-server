@@ -2,7 +2,7 @@ class OrdersController < ApplicationController
 
    def valid_params
      json_params = ActionController::Parameters.new( JSON.parse(request.body.read) )
-     return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone)
+     json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone)
    end
 
   def index
@@ -29,21 +29,14 @@ class OrdersController < ApplicationController
     @order = Order.new valid_params
 
     if @order.valid?
-      available_driver = Driver.find_available_driver @order
 
-      if available_driver.present?
-        @order.driver = available_driver
-
-        available_driver.status = :busy
-        available_driver.save
+      available_driver = Driver.find_available_drivers @order
+      # TODO notify drivers
 
         @order.save
 
         render :json => {:order => @order}
-      else
-        render :json => {}, :status => :service_unavailable
-      end
-    else
+   else
       render :json => {:errors => @order.errors}, :status => :bad_request
     end
   end
