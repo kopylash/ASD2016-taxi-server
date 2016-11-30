@@ -2,7 +2,7 @@ class OrdersController < ApplicationController
 
   def valid_params
     json_params = ActionController::Parameters.new(JSON.parse(request.body.read))
-    return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone, :pickup_lat, :pickup_lon, :dropoff_lat, :dropoff_lon,)
+    return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone, :pickup_lat, :pickup_lon, :dropoff_lat, :dropoff_lon, :price)
   end
 
   def index
@@ -29,15 +29,62 @@ class OrdersController < ApplicationController
     @order = Order.new valid_params
 
     if @order.valid?
-
       available_driver = Driver.find_available_drivers @order
       # TODO notify drivers
 
-        @order.save
+      unless @order.price.present?
+        matrix_data = get_trip_data @order.pickup_lat, @order.pickup_lon, @order.dropoff_lat, @order.dropoff_lon
 
-        render :json => {:order => @order}
-   else
+        price = calculate_price matrix_data.distance_in_meters
+
+        @order.price = price
+      end
+
+      @order.save
+
+      render :json => {:order => @order}
+    else
       render :json => {:errors => @order.errors}, :status => :bad_request
     end
+  end
+
+  def price
+    matrix_data = get_trip_data params[:pickup_lat], params[:pickup_lon], params[:dropoff_lat], params[:dropoff_lon]
+
+    distance = matrix_data.distance_in_meters
+
+    price_estimate = calculate_price distance
+
+    render :json => {
+      :distance => distance,
+      :price => price_estimate
+    }
+  end
+
+  def calculate_price distance_m
+    km_price = 0.69 # price, in euros, per kilometer
+
+    distance_m / 1000 * km_price
+  end
+
+  def get_trip_data pickup_lat, pickup_lon, dropoff_lat, dropoff_lon
+    origin = {
+      lat: pickup_lat,
+      lng: pickup_lon
+    }
+
+    destination = {
+      lat: dropoff_lat,
+      lng: dropoff_lon
+    }
+
+    matrix = GoogleDistanceMatrix::Matrix.new
+
+    matrix.origins << origin
+    matrix.destinations << destination
+
+    matrix_data = matrix.data
+
+    matrix_data[0][0]
   end
 end
