@@ -5,6 +5,6 @@ class Driver < ActiveRecord::Base
 
 
   def self.find_available_drivers order
-    self.avaliable.near([order.pickup_lat,order.pickup_lon],10)
+    self.available.near([order.pickup_lat,order.pickup_lon],10)
   end
 end
