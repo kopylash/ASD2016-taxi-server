@@ -3,6 +3,6 @@ class Driver < ActiveRecord::Base
   enum status: [:available, :busy, :off]
 
   def self.find_available_driver order
-    Driver.available.first
+    Driver.available
   end
 end

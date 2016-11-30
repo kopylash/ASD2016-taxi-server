@@ -29,22 +29,31 @@ class OrdersController < ApplicationController
     @order = Order.new valid_params
 
     if @order.valid?
-      available_driver = Driver.find_available_driver @order
+      available_drivers = Driver.find_available_driver @order
 
-      if available_driver.present?
-        @order.driver = available_driver
+      #sending push request to available driver
+      NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
 
-        available_driver.status = :busy
-        available_driver.save
-
-        @order.save
-
-        render :json => {:order => @order}
-      else
-        render :json => {}, :status => :service_unavailable
-      end
+      render :json => {:message => "Your order is being processed. You will be notified as soon as driver accepts it."}
     else
       render :json => {:errors => @order.errors}, :status => :bad_request
     end
+  end
+
+
+  def accept_order
+    # if available_drivers.present?
+    #   @order.driver = available_drivers
+    #
+    #   available_drivers.status = :busy
+    #   available_drivers.save
+    #
+    #   @order.save
+    #
+    #   render :json => {:order => @order}
+    # else
+    #   render :json => {}, :status => :service_unavailable
+    # end
+    # #todo send info to client (order + driver info)
   end
 end
