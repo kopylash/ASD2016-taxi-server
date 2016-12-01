@@ -33,9 +33,9 @@ class OrdersController < ApplicationController
       # TODO notify drivers
 
       unless @order.price.present?
-        matrix_data = get_trip_data @order.pickup_address, @order.dropoff_address
+        matrix_data = Order.trip_data @order.pickup_address, @order.dropoff_address
 
-        price = calculate_price matrix_data.distance_in_meters
+        price = Order.calculate_price matrix_data.distance_in_meters
 
         @order.price = price
       end
@@ -49,40 +49,15 @@ class OrdersController < ApplicationController
   end
 
   def price
-    matrix_data = get_trip_data params[:pickup], params[:dropoff]
+    matrix_data = Order.trip_data params[:pickup], params[:dropoff]
 
     distance = matrix_data.distance_in_meters
 
-    price_estimate = calculate_price distance
+    price_estimate = Order.calculate_price distance
 
     render :json => {
       :distance => distance,
       :price => price_estimate
     }
-  end
-
-  def calculate_price distance_m
-    km_price = 0.69 # price, in euros, per kilometer
-
-    distance_m / 1000 * km_price
-  end
-
-  def get_trip_data pickup, dropoff
-    origin = {
-      address: pickup
-    }
-
-    destination = {
-      address: dropoff
-    }
-
-    matrix = GoogleDistanceMatrix::Matrix.new
-
-    matrix.origins << origin
-    matrix.destinations << destination
-
-    matrix_data = matrix.data
-
-    matrix_data[0][0]
   end
 end
