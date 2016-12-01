@@ -43,28 +43,24 @@ class OrdersController < ApplicationController
 
 
   def accept
+    json_params = ActionController::Parameters.new( JSON.parse(request.body.read) )
+    @params = json_params.require(:accept_details).permit(:order_id, :driver_id)
 
-    # order_id, driver_id, find order, and set driver to it.
+    @order = Order.find_by_id(@params[:order_id])
+    @driver = Driver.find_by_id(@params[:driver_id])
+
+    if @driver.present?
+      @order.driver = @driver
+      @driver.status = :busy
 
 
-    #todo set notification to client channel -> phone number
+      @order.save
+      @driver.save
+      render :json => {:order => @order}
+      RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
 
-
-
-    puts('you you you accept')
-    # if available_drivers.present?
-    #   @order.driver = available_drivers
-    #
-    #   available_drivers.status = :busy
-    #   available_drivers.save
-    #
-    #   @order.save
-    #
-    #   render :json => {:order => @order}
-    # else
-    #   render :json => {}, :status => :service_unavailable
-    # end
-    # #todo send info to client (order + driver info)
-    render :json => {:message => "hello"}
+    else
+      render :json => {}, :status => :service_unavailable
+    end
   end
 end
