@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 
 git archive --format=tar.gz -o deploy.tgz $BITBUCKET_COMMIT
 
