@@ -11,9 +11,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20161119162147) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "drivers", force: :cascade do |t|
+    t.string   "name"
+    t.string   "phone"
+    t.string   "car_model"
+    t.string   "car_number"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.integer  "status",     default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string   "pickup_address"
+    t.string   "dropoff_address"
+    t.float    "pickup_lat"
+    t.float    "pickup_lon"
+    t.float    "dropoff_lat"
+    t.float    "dropoff_lon"
+    t.string   "client_name"
+    t.string   "phone"
+    t.float    "distance"
+    t.decimal  "price",           precision: 5, scale: 2
+    t.boolean  "completed",                               default: false
+    t.integer  "rating"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "driver_id"
+  end
+
+  add_foreign_key "orders", "drivers"
 end
