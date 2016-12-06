@@ -16,7 +16,8 @@ pipelines:
         - step:
             script:
                 - echo "This script runs only on commit to the master branch."
-                - ./heroku_deploy.sh
+                - chmod +x heroku-deploy.sh
+                - bash ./heroku-deploy.sh
         fb-*:
         - step:
             script:

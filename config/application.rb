@@ -28,5 +28,11 @@ module TaksiServer
         resource '*', :headers => :any, :methods => :any
       end
     end
+    # Google Maps API key for distance matrix
+    config.google_api_key = "AIzaSyAczS8xCraLhXMdFriCsGv859wXLdDgmMw"
+
+    GoogleDistanceMatrix.configure_defaults do |c|
+      c.google_api_key = Rails.application.config.google_api_key
+    end
   end
 end
