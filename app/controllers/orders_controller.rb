@@ -2,7 +2,7 @@ class OrdersController < ApplicationController
 
   def valid_params
     json_params = ActionController::Parameters.new(JSON.parse(request.body.read))
-    return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone, :pickup_lat, :pickup_lon, :dropoff_lat, :dropoff_lon, :price)
+    return json_params.require(:order).permit(:pickup_address, :dropoff_address, :client_name, :phone, :pickup_lat, :pickup_lon, :dropoff_lat, :dropoff_lon, :price, :distance)
   end
 
   def index
