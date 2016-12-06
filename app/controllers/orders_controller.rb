@@ -30,9 +30,6 @@ class OrdersController < ApplicationController
 
     if @order.valid?
 
-      available_drivers = Driver.find_available_drivers @order
-      NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
-
       unless @order.price.present?
         matrix_data = Order.trip_data @order.pickup_address, @order.dropoff_address
 
@@ -40,6 +37,9 @@ class OrdersController < ApplicationController
 
         @order.price = price
       end
+
+      available_drivers = Driver.find_available_drivers @order
+      NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
 
       @order.save
       render :json => {:order => @order}
