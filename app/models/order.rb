@@ -7,8 +7,8 @@ class Order < ActiveRecord::Base
 
   def self.calculate_price distance_m
     km_price = 0.69 # price, in euros, per kilometer
-
-    distance_m / 1000 * km_price
+    base_tariff = 1
+    (distance_m.to_f / 1000 * km_price + base_tariff).round(2)
   end
 
   def self.trip_data pickup, dropoff
