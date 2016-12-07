@@ -38,10 +38,11 @@ class OrdersController < ApplicationController
         @order.price = price
       end
 
+      @order.save
+
       available_drivers = Driver.find_available_drivers @order
       NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
 
-      @order.save
       render :json => {:order => @order}
       # todo maybe just send "order being processeed"
     else
