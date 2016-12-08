@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :orders, only: [:create, :show] do
     collection do
-      get :price,
+      get :price
       post :accept
     end
   end
