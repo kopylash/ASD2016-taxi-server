@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20161119162147) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "drivers", force: :cascade do |t|
     t.string   "name"
     t.string   "phone"
@@ -43,4 +46,5 @@ ActiveRecord::Schema.define(version: 20161119162147) do
     t.integer  "driver_id"
   end
 
+  add_foreign_key "orders", "drivers"
 end

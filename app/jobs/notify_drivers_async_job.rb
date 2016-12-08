@@ -3,6 +3,5 @@ class NotifyDriversAsyncJob
   def perform(order, driver_ids)
     message = {:order => order, :id_list => driver_ids}
     Pusher.trigger('orders', 'new_order', message)
-    puts(message)
   end
 end

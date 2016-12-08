@@ -52,11 +52,12 @@ class OrdersController < ApplicationController
 
 
   def accept
+    # todo fix routes to rest style /orders/:id/accept
     json_params = ActionController::Parameters.new( JSON.parse(request.body.read) )
     @params = json_params.require(:accept_details).permit(:order_id, :driver_id)
 
-    @order = Order.find_by_id(@params[:order_id])
-    @driver = Driver.find_by_id(@params[:driver_id])
+    @order = Order.find(@params[:order_id])
+    @driver = Driver.find(@params[:driver_id])
 
     if @driver.present?
       @order.driver = @driver
