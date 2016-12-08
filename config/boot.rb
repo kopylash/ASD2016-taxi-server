@@ -6,7 +6,7 @@ require 'rails/commands/server'
 
 module DefaultOptions
   def default_options
-    super.merge!(Port: 300)
+    super.merge!(Port: 3000)
   end
 end
 
