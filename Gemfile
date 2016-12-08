@@ -37,11 +37,18 @@ gem "certified"
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+#for long-running operation
+gem 'sucker_punch', '~> 2.0'
+
+#for sending push requests
+gem 'pusher'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem "rspec-rails"
   gem 'factory_girl_rails'
+  gem 'sqlite3'
 end
 
 
