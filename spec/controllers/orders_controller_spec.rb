@@ -55,29 +55,14 @@ RSpec.describe OrdersController, type: :controller do
     end
   end
 
-  describe 'POST create' , :pending => true do
+  describe 'POST create' do
     it 'creates new order' do
-      post :create, :order => FactoryGirl.build(:order).to_json
+      post :create, {:order => FactoryGirl.build(:order)}.to_json
       expect(assigns(:order).class).to eq Order
     end
     it 'returns error code when invalid data provided' do
-      post :create, :order => FactoryGirl.build(:invalid_order).to_json
+      post :create, {:order => FactoryGirl.build(:invalid_order)}.to_json
       expect(response.status).to eq 400
-    end
-    it 'assigns available driver' do
-      @driver = FactoryGirl.create(:driver)
-      post :create, :order => FactoryGirl.build(:order).to_json
-      expect(assigns(:order).driver).to eq @driver
-    end
-    it 'throws error when no available drivers found' do
-      post :create, :order => FactoryGirl.build(:order).to_json
-      expect(response.status).to eq 503
-    end
-    it 'sets the status of the assigned driver to busy' do
-      @driver = FactoryGirl.create(:driver)
-      @order = FactoryGirl.build(:order)
-      post :create, :order => @order.to_json
-      expect(assigns(:order).driver.status).to eq "busy"
     end
   end
 end
