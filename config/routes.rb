@@ -4,7 +4,7 @@ Rails.application.routes.draw do
       get :price
     end
   end
-  resources :drivers, only: [:show] do
+  resources :drivers, only: [:show, :update] do
     resources :orders, only: [:index, :show]
   end
 end
