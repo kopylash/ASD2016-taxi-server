@@ -55,7 +55,7 @@ RSpec.describe OrdersController, type: :controller do
     end
   end
 
-  describe 'POST create' , :pending => true do
+  describe 'POST create', :pending => true do
     it 'creates new order' do
       post :create, :order => FactoryGirl.build(:order).to_json
       expect(assigns(:order).class).to eq Order
@@ -80,4 +80,43 @@ RSpec.describe OrdersController, type: :controller do
       expect(assigns(:order).driver.status).to eq "busy"
     end
   end
+end
+
+RSpec.describe "Orders accept", :type => :request do
+  it 'returns 404 status code if no driver in req' do
+    @order = FactoryGirl.create(:order)
+    params = {accept_details: {order_id: @order.id}}
+
+    post accept_orders_path, params.to_json, {format: :json}
+    expect(response.status).to eq 404
+  end
+
+  it 'returns 404 status code if no order in req' do
+    @driver = FactoryGirl.create(:driver)
+    params = {accept_details: {driver_id: @driver.id}}
+
+    post accept_orders_path, params.to_json, {format: :json}
+    expect(response.status).to eq 404
+  end
+
+  it 'assigns driver' do
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.create(:order)
+    params = {accept_details: {driver_id: @driver.id, order_id: @order.id}}
+
+    post accept_orders_path, params.to_json, {format: :json}
+    expect(assigns(:order).driver).to eq @driver
+  end
+
+  it 'assigns driver status to busy' do
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.create(:order)
+    params = {accept_details: {driver_id: @driver.id, order_id: @order.id}}
+
+    post accept_orders_path, params.to_json, {format: :json}
+    expect(assigns(:driver).status).to eq "busy"
+  end
+
+  # todo check pusher call
+
 end

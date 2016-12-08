@@ -41,7 +41,7 @@ class OrdersController < ApplicationController
       @order.save
 
       available_drivers = Driver.find_available_drivers @order
-      NotifyDriversAsyncJob.new.async.perform(@order,  available_drivers.map  { |p| p.id })
+      NotifyDriversAsyncJob.new.async.perform(@order, available_drivers.map { |p| p.id })
 
       render :json => {:order => @order}
       # todo maybe just send "order being processeed"
@@ -53,24 +53,28 @@ class OrdersController < ApplicationController
 
   def accept
     # todo fix routes to rest style /orders/:id/accept
-    json_params = ActionController::Parameters.new( JSON.parse(request.body.read) )
+    json_params = ActionController::Parameters.new(JSON.parse(request.body.read))
     @params = json_params.require(:accept_details).permit(:order_id, :driver_id)
 
-    @order = Order.find(@params[:order_id])
-    @driver = Driver.find(@params[:driver_id])
+    begin
+      @order = Order.find(@params[:order_id])
+      @driver = Driver.find(@params[:driver_id])
 
-    if @driver.present?
-      @order.driver = @driver
-      @driver.status = :busy
+      if @driver.present?
+        @order.driver = @driver
+        @driver.status = :busy
 
 
-      @order.save
-      @driver.save
-      render :json => {:order => @order}
-      RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
+        @order.save
+        @driver.save
+        render :json => {:order => @order}
+        RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
 
-    else
-      render :json => {}, :status => :service_unavailable
+      else
+        render :json => {}, :status => :not_found
+      end
+    rescue
+      render :json => {}, :status => :not_found
     end
   end
 
@@ -82,8 +86,8 @@ class OrdersController < ApplicationController
     price_estimate = Order.calculate_price distance
 
     render :json => {
-      :distance => distance,
-      :price => price_estimate
+        :distance => distance,
+        :price => price_estimate
     }
   end
 end
