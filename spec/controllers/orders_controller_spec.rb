@@ -106,7 +106,7 @@ RSpec.describe OrdersController, type: :controller do
   end
 end
 
-RSpec.describe "Orders accept", :type => :request do
+RSpec.describe 'Orders accept', :type => :request do
   it 'returns 404 status code if no driver in req' do
     @order = FactoryGirl.create(:order)
     params = {accept_details: {order_id: @order.id}}

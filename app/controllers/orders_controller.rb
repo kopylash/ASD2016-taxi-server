@@ -60,19 +60,14 @@ class OrdersController < ApplicationController
       @order = Order.find(@params[:order_id])
       @driver = Driver.find(@params[:driver_id])
 
-      if @driver.present?
-        @order.driver = @driver
-        @driver.status = :busy
+      @order.driver = @driver
+      @driver.status = :busy
 
 
-        @order.save
-        @driver.save
-        render :json => {:order => @order}
-        RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
-
-      else
-        render :json => {}, :status => :not_found
-      end
+      @order.save
+      @driver.save
+      render :json => {:order => @order}
+      RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
     rescue
       render :json => {}, :status => :not_found
     end
