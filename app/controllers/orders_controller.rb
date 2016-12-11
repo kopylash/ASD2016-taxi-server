@@ -98,7 +98,8 @@ class OrdersController < ApplicationController
       @order.save
       render :json => {:order => @order}
 
-    #   todo async push to client
+      CompleteClientOrderAsyncJob.new.async.perform(@order.phone)
+
     rescue ActiveRecord::RecordNotFound
       render :json => {}, :status => :not_found
     end
