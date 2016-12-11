@@ -90,4 +90,17 @@ class OrdersController < ApplicationController
         :price => price_estimate
     }
   end
+
+  def complete
+    begin
+      @order = Order.find params[:id]
+      @order.completed = true
+      @order.save
+      render :json => {:order => @order}
+
+    #   todo async push to client
+    rescue ActiveRecord::RecordNotFound
+      render :json => {}, :status => :not_found
+    end
+  end
 end
