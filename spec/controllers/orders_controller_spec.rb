@@ -83,10 +83,12 @@ RSpec.describe OrdersController, type: :controller do
       stub_request(:get, "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Liivi%202,%20Tartu&key=AIzaSyAczS8xCraLhXMdFriCsGv859wXLdDgmMw&origins=Raekoja%20Plats%201,%20Tartu").
           with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'maps.googleapis.com', 'User-Agent'=>'Ruby'}).
           to_return(:status => 200, :body => distanceApiResponse, :headers => {})
+      stub_request(:any, /.*pusherapp.*/)
       post :create, {:order => FactoryGirl.build(:order)}.to_json
       expect(assigns(:order).class).to eq Order
     end
     it 'returns error code when invalid data provided' do
+      stub_request(:any, /.*pusherapp.*/)
       post :create, {:order => FactoryGirl.build(:invalid_order)}.to_json
       expect(response.status).to eq 400
     end
@@ -108,7 +110,7 @@ RSpec.describe "Orders accept", :type => :request do
   it 'returns 404 status code if no driver in req' do
     @order = FactoryGirl.create(:order)
     params = {accept_details: {order_id: @order.id}}
-
+    stub_request(:any, /.*pusherapp.*/)
     post accept_orders_path, params.to_json, {format: :json}
     expect(response.status).to eq 404
   end
@@ -116,7 +118,7 @@ RSpec.describe "Orders accept", :type => :request do
   it 'returns 404 status code if no order in req' do
     @driver = FactoryGirl.create(:driver)
     params = {accept_details: {driver_id: @driver.id}}
-
+    stub_request(:any, /.*pusherapp.*/)
     post accept_orders_path, params.to_json, {format: :json}
     expect(response.status).to eq 404
   end
@@ -125,7 +127,7 @@ RSpec.describe "Orders accept", :type => :request do
     @driver = FactoryGirl.create(:driver)
     @order = FactoryGirl.create(:order)
     params = {accept_details: {driver_id: @driver.id, order_id: @order.id}}
-
+    stub_request(:any, /.*pusherapp.*/)
     post accept_orders_path, params.to_json, {format: :json}
     expect(assigns(:order).driver).to eq @driver
   end
@@ -134,11 +136,10 @@ RSpec.describe "Orders accept", :type => :request do
     @driver = FactoryGirl.create(:driver)
     @order = FactoryGirl.create(:order)
     params = {accept_details: {driver_id: @driver.id, order_id: @order.id}}
-
+    stub_request(:any, /.*pusherapp.*/)
     post accept_orders_path, params.to_json, {format: :json}
     expect(assigns(:driver).status).to eq "busy"
   end
 
   # todo check pusher call
-
 end
