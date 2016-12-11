@@ -68,7 +68,7 @@ class OrdersController < ApplicationController
         @order.save
         @driver.save
         render :json => {:order => @order}
-        RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
+        RespondToClientAsyncJob.new.async.perform(@order, @order.driver, @order.phone)
 
       else
         render :json => {}, :status => :not_found
