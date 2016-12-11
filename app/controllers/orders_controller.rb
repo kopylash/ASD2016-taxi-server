@@ -56,6 +56,7 @@ class OrdersController < ApplicationController
     json_params = ActionController::Parameters.new(JSON.parse(request.body.read))
     @params = json_params.require(:accept_details).permit(:order_id, :driver_id)
 
+
     begin
       @order = Order.find(@params[:order_id])
       @driver = Driver.find(@params[:driver_id])
