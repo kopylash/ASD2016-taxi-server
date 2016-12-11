@@ -1,6 +1,29 @@
 require 'rails_helper'
 
 RSpec.describe OrdersController, type: :controller do
+  distanceApiResponse = '{
+   "destination_addresses" : [ "Juhan Liivi 2, 50409 Tartu, Estonia" ],
+   "origin_addresses" : [ "Raatuse 22, 51009 Tartu, Estonia" ],
+   "rows" : [
+      {
+         "elements" : [
+            {
+               "distance" : {
+                  "text" : "2.3 km",
+                  "value" : 2313
+               },
+               "duration" : {
+                  "text" : "6 mins",
+                  "value" : 383
+               },
+               "status" : "OK"
+            }
+         ]
+      }
+   ],
+   "status" : "OK"
+}
+'
   describe 'GET index' do
     it 'returns orders of the given driver' do
       @driver1 = FactoryGirl.create(:driver)
@@ -57,6 +80,9 @@ RSpec.describe OrdersController, type: :controller do
 
   describe 'POST create' do
     it 'creates new order' do
+      stub_request(:get, "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Liivi%202,%20Tartu&key=AIzaSyAczS8xCraLhXMdFriCsGv859wXLdDgmMw&origins=Raekoja%20Plats%201,%20Tartu").
+          with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'maps.googleapis.com', 'User-Agent'=>'Ruby'}).
+          to_return(:status => 200, :body => distanceApiResponse, :headers => {})
       post :create, {:order => FactoryGirl.build(:order)}.to_json
       expect(assigns(:order).class).to eq Order
     end
@@ -68,10 +94,11 @@ RSpec.describe OrdersController, type: :controller do
 
   describe 'GET price' do
     it 'returns price and distance estimate' do
+      stub_request(:get, "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Liivi%202,%20Tartu&key=AIzaSyAczS8xCraLhXMdFriCsGv859wXLdDgmMw&origins=Raatuse%2022,%20Tartu").
+          with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'maps.googleapis.com', 'User-Agent'=>'Ruby'}).
+          to_return(:status => 200, :body => distanceApiResponse, :headers => {})
+
       post :price, pickup: 'Raatuse 22, Tartu', dropoff: 'Liivi 2, Tartu'
-      uri = URI("http://maps.googleapis.com/maps/api/geocode/json?address=Liivi%202,%20Tartu,%20Estonia&sensor=false
-")
-      response2 = Net::HTTP.get(uri)
       expect(response.body).to eq ({:distance => 2313, :price => 2.6}.to_json)
     end
   end
