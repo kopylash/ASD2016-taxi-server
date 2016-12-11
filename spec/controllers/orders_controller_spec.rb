@@ -105,3 +105,25 @@ RSpec.describe "Orders accept", :type => :request do
   # todo check pusher call
 
 end
+
+RSpec.describe "Complete order", :type => :request do
+  it 'returns 404 status code if no order found' do
+    post complete_order_path(87)
+    expect(response.status).to eq 404
+  end
+
+  it 'sets complete status to the order' do
+    @order = FactoryGirl.create(:order)
+
+    post complete_order_path(@order.id)
+    expect(assigns(:order).completed).to eq true
+  end
+
+  it 'returns 200 OK' do
+    @order = FactoryGirl.create(:order)
+
+    post complete_order_path(@order.id)
+    expect(response.status).to eq 200
+  end
+
+end
