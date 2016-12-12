@@ -85,4 +85,18 @@ class OrdersController < ApplicationController
         :price => price_estimate
     }
   end
+
+  def complete
+    begin
+      @order = Order.find params[:id]
+      @order.completed = true
+      @order.save
+      render :json => {:order => @order}
+
+      CompleteClientOrderAsyncJob.new.async.perform(@order.phone)
+
+    rescue ActiveRecord::RecordNotFound
+      render :json => {}, :status => :not_found
+    end
+  end
 end
