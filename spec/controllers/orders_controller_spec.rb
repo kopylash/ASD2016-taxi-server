@@ -1,7 +1,5 @@
 require 'rails_helper'
-
-RSpec.describe OrdersController, type: :controller do
-  distanceApiResponse = '{
+distanceApiResponse = '{
    "destination_addresses" : [ "Juhan Liivi 2, 50409 Tartu, Estonia" ],
    "origin_addresses" : [ "Raatuse 22, 51009 Tartu, Estonia" ],
    "rows" : [
@@ -24,6 +22,8 @@ RSpec.describe OrdersController, type: :controller do
    "status" : "OK"
 }
 '
+RSpec.describe OrdersController, type: :controller do
+
   describe 'GET index' do
     it 'returns orders of the given driver' do
       @driver1 = FactoryGirl.create(:driver)
@@ -128,6 +128,10 @@ RSpec.describe 'Orders accept', :type => :request do
     @order = FactoryGirl.create(:order)
     params = {accept_details: {driver_id: @driver.id, order_id: @order.id}}
     stub_request(:any, /.*pusherapp.*/)
+    stub_request(:get, "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Liivi%202,%20Tartu&key=AIzaSyAczS8xCraLhXMdFriCsGv859wXLdDgmMw&origins=Raekoja%20Plats%201,%20Tartu").
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'maps.googleapis.com', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => distanceApiResponse, :headers => {})
+
     post accept_orders_path, params.to_json, {format: :json}
     expect(assigns(:order).driver).to eq @driver
   end
@@ -137,6 +141,10 @@ RSpec.describe 'Orders accept', :type => :request do
     @order = FactoryGirl.create(:order)
     params = {accept_details: {driver_id: @driver.id, order_id: @order.id}}
     stub_request(:any, /.*pusherapp.*/)
+    stub_request(:get, "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Liivi%202,%20Tartu&key=AIzaSyAczS8xCraLhXMdFriCsGv859wXLdDgmMw&origins=Raekoja%20Plats%201,%20Tartu").
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'maps.googleapis.com', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => distanceApiResponse, :headers => {})
+
     post accept_orders_path, params.to_json, {format: :json}
     expect(assigns(:driver).status).to eq "busy"
   end
