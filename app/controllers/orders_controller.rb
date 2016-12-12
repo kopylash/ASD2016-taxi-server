@@ -67,7 +67,7 @@ class OrdersController < ApplicationController
 
       distance = matrix_data.distance_in_meters
 
-      time_estimate = ((distance/1000)/20)*60
+      time_estimate = (((distance.to_f/1000)/20)*60).round(2)
 
       @order.distance = distance
 
