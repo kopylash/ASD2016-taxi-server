@@ -82,7 +82,8 @@ class OrdersController < ApplicationController
 
     render :json => {
         :distance => distance,
-        :price => price_estimate
+        :price => price_estimate,
+        :time => ((distance/1000)/20)*60
     }
   end
 
