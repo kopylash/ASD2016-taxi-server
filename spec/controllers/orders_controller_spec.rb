@@ -101,7 +101,7 @@ RSpec.describe OrdersController, type: :controller do
           to_return(:status => 200, :body => distanceApiResponse, :headers => {})
 
       post :price, pickup: 'Raatuse 22, Tartu', dropoff: 'Liivi 2, Tartu'
-      expect(response.body).to eq ({:distance => 2313, :price => 2.6}.to_json)
+      expect(response.body).to eq ({:distance => 2313, :price => 2.6, :travelTime => 0}.to_json)
     end
   end
 end
@@ -151,17 +151,33 @@ RSpec.describe "Complete order", :type => :request do
   end
 
   it 'sets complete status to the order' do
-    @order = FactoryGirl.create(:order)
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.build(:order)
+    @order.driver = @driver
+    @order.save!
 
     post complete_order_path(@order.id)
     expect(assigns(:order).completed).to eq true
   end
 
   it 'returns 200 OK' do
-    @order = FactoryGirl.create(:order)
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.build(:order)
+    @order.driver = @driver
+    @order.save!
 
     post complete_order_path(@order.id)
     expect(response.status).to eq 200
+  end
+
+  it 'sets driver status to available' do
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.build(:order)
+    @order.driver = @driver
+    @order.save!
+
+    post complete_order_path(@order.id)
+    expect(assigns(:driver).status).to eq "available"
   end
 
 end
