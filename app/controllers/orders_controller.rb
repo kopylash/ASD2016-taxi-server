@@ -63,12 +63,20 @@ class OrdersController < ApplicationController
       @order.driver = @driver
       @driver.status = :busy
 
+      matrix_data = Order.trip_data @order.pickup_address, @order.dropoff_address
+
+      distance = matrix_data.distance_in_meters
+
+      time_estimate = ((distance/1000)/20)*60
+
+      @order.distance = distance
 
       @order.save
       @driver.save
+
+      RespondToClientAsyncJob.new.async.perform(@order, @order.driver, @order.phone, time_estimate)
       render :json => {:order => @order}
-      RespondToClientAsyncJob.new.async.perform(@order, @order.driver, @order.phone)
-    rescue
+    rescue ActiveRecord::RecordNotFound
       render :json => {}, :status => :not_found
     end
   end
@@ -82,7 +90,8 @@ class OrdersController < ApplicationController
 
     render :json => {
         :distance => distance,
-        :price => price_estimate
+        :price => price_estimate,
+        :travelTime => ((distance/1000)/20)*60
     }
   end
 
