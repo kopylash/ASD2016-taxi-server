@@ -99,7 +99,13 @@ class OrdersController < ApplicationController
     begin
       @order = Order.find params[:id]
       @order.completed = true
+
+
+      @driver = @order.driver
+      @driver.status = :available
+      @driver.save
       @order.save
+
       render :json => {:order => @order}
 
       CompleteClientOrderAsyncJob.new.async.perform(@order.phone)

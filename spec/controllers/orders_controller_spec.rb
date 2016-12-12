@@ -159,17 +159,33 @@ RSpec.describe "Complete order", :type => :request do
   end
 
   it 'sets complete status to the order' do
-    @order = FactoryGirl.create(:order)
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.build(:order)
+    @order.driver = @driver
+    @order.save!
 
     post complete_order_path(@order.id)
     expect(assigns(:order).completed).to eq true
   end
 
   it 'returns 200 OK' do
-    @order = FactoryGirl.create(:order)
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.build(:order)
+    @order.driver = @driver
+    @order.save!
 
     post complete_order_path(@order.id)
     expect(response.status).to eq 200
+  end
+
+  it 'sets driver status to available' do
+    @driver = FactoryGirl.create(:driver)
+    @order = FactoryGirl.build(:order)
+    @order.driver = @driver
+    @order.save!
+
+    post complete_order_path(@order.id)
+    expect(assigns(:driver).status).to eq "available"
   end
 
 end
