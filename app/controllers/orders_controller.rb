@@ -60,20 +60,23 @@ class OrdersController < ApplicationController
       @order = Order.find(@params[:order_id])
       @driver = Driver.find(@params[:driver_id])
 
-      if @driver.present?
-        @order.driver = @driver
-        @driver.status = :busy
+      @order.driver = @driver
+      @driver.status = :busy
 
+      matrix_data = Order.trip_data @order.pickup_address, @order.dropoff_address
 
-        @order.save
-        @driver.save
-        render :json => {:order => @order}
-        RespondToClientAsyncJob.new.async.perform(@order, @order.phone)
+      distance = matrix_data.distance_in_meters
 
-      else
-        render :json => {}, :status => :not_found
-      end
-    rescue
+      time_estimate = (((distance.to_f/1000)/20)*60).round(2)
+
+      @order.distance = distance
+
+      @order.save
+      @driver.save
+
+      RespondToClientAsyncJob.new.async.perform(@order, @order.driver, @order.phone, time_estimate)
+      render :json => {:order => @order}
+    rescue ActiveRecord::RecordNotFound
       render :json => {}, :status => :not_found
     end
   end
@@ -87,7 +90,28 @@ class OrdersController < ApplicationController
 
     render :json => {
         :distance => distance,
-        :price => price_estimate
+        :price => price_estimate,
+        :travelTime => ((distance/1000)/20)*60
     }
+  end
+
+  def complete
+    begin
+      @order = Order.find params[:id]
+      @order.completed = true
+
+
+      @driver = @order.driver
+      @driver.status = :available
+      @driver.save
+      @order.save
+
+      render :json => {:order => @order}
+
+      CompleteClientOrderAsyncJob.new.async.perform(@order.phone)
+
+    rescue ActiveRecord::RecordNotFound
+      render :json => {}, :status => :not_found
+    end
   end
 end

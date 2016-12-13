@@ -49,6 +49,7 @@ group :development, :test do
   gem "rspec-rails"
   gem 'factory_girl_rails'
   gem 'sqlite3'
+  gem 'webmock'
 end
 
 
@@ -62,6 +63,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'poltergeist'
   gem 'simplecov'
+  gem 'webmock'
 end
 
 group :development do
